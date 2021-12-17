@@ -30,5 +30,6 @@ class _BotCommands:
         self.UpdateCommand = 'update'
         self.ExecHelpCommand = 'exechelp'
         self.TsHelpCommand = 'tshelp'
+        self.GDTOTCommand = 'gdtot'
 
 BotCommands = _BotCommands()

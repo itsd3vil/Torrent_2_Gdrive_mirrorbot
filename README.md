@@ -111,6 +111,7 @@ Fill up rest of the fields. Meaning of each fields are discussed below:
 - **UPSTREAM_REPO**: Link for Bot Upstream Repo, if you want default update, fill ```https://github.com/breakdowns/slam-mirrorbot```.
 - **UPSTREAM_BRANCH**: Branch name for Bot Upstream Repo (Recommended using master branch)
 ### Optional Field
+- **GDTOT_COOKIES**: add your GDTOT cookies in form of "crypt=eXU2cDlzYWhzRk93eXV4cTQzMXFCeHE2UElEcUtJcEY1U0 ; PHPSESSID=0vt54of2tao357sltquke"
 - **AUTHORIZED_CHATS**: Fill user_id and chat_id of you want to authorize.
 - **IS_TEAM_DRIVE**: Set to `True` if `GDRIVE_FOLDER_ID` is from a Team Drive else `False` or Leave it empty.
 - **USE_SERVICE_ACCOUNTS**: (Leave empty if unsure) Whether to use Service Accounts or not. For this to work see [Using service accounts](https://github.com/breakdowns/slam-mirrorbot#generate-service-accounts-what-is-service-account) section below.
@@ -152,6 +153,8 @@ Three buttons are already added of Drive Link, Index Link, and View Link, you ca
 
 </details>
 
+## Getting GDTOT COOKIES
+- Watch This [Video](https://youtu.be/PjR6KpHJ23s)
 
 ## Getting Google OAuth API credential file
 
@@ -247,5 +250,5 @@ Thanks to:
 - [iamLiquidX](https://github.com/iamLiquidX/) for Speedtest module
 - [ydner](https://github.com/ydner/) for Usage module
 - [breakdowns](https://github.com/breakdowns) for main repo
-- [ayush](https://github.com/ayushteke) for nothing
+- [Jigarvarma2005](https://gitlab.com/Jigarvarma2005) For There GDTOT Code
 

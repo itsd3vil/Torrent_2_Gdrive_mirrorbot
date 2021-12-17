@@ -5,7 +5,7 @@ from bot.helper.telegram_helper.message_utils import sendMessage, sendMarkup, ed
 from bot.helper.telegram_helper.filters import CustomFilters
 import threading
 from bot.helper.telegram_helper.bot_commands import BotCommands
-
+from bot.helper.mirror_utils.upload_utils.gdtot_helper import GDTOT
 
 def list_drive(update, context):
     try:
@@ -24,5 +24,34 @@ def list_drive(update, context):
         sendMessage('Send a search key along with command', context.bot, update)
 
 
+def gdtot(update, context):
+    try:
+        search = update.message.text.split(' ', 1)[1]
+        search_list = search.split(' ')
+        for glink in search_list:
+            LOGGER.info(f"Extracting gdtot link: {glink}")
+            button = None
+            reply = sendMessage('Getting Your GDTOT File Wait....', context.bot, update)
+            file_name, file_url = GDTOT().parse(url=glink)
+            if file_name == 404:
+                sendMessage(file_url, context.bot, update)
+                return
+            if file_url != 404:
+                gdrive = GoogleDriveHelper(None)
+                msg, button = gdrive.clone(file_url)
+            if button:
+                editMessage(msg, reply, button)
+            else:
+                editMessage(file_name, reply, button)
+    except IndexError:
+        sendMessage('Send cmd along with url', context.bot, update)
+    except Exception as e:
+        LOGGER.info(e)
+
 list_handler = CommandHandler(BotCommands.ListCommand, list_drive, filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
+gdtot_handler = CommandHandler(BotCommands.GDTOTCommand, gdtot, filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
+
+
+
 dispatcher.add_handler(list_handler)
+dispatcher.add_handler(gdtot_handler)

@@ -65,7 +65,7 @@ class MirrorListener(listeners.MirrorListeners):
         with download_dict_lock:
             LOGGER.info(f"Download completed: {download_dict[self.uid].name()}")
             download = download_dict[self.uid]
-            name = download.name().replace('/', '')
+            name = f"{download.name()}".replace('/', '')
             gid = download.gid()
             size = download.size_raw()
             if name == "None" or self.isQbit: # when pyrogram's media.file_name is of NoneType
@@ -245,16 +245,25 @@ def _mirror(bot, update, isTar=False, extract=False, isZip=False, isQbit=False):
             if link == "qbs":
                 qbitsel = True
             link = message_args[2]
-            if bot_utils.is_url(link) and not bot_utils.is_magnet(link):
-                resp = requests.get(link)
-                if resp.status_code == 200:
-                    file_name = str(time.time()).replace(".", "") + ".torrent"
-                    with open(file_name, "wb") as f:
-                        f.write(resp.content)
-                    link = f"/usr/src/app/{file_name}"
-                else:
-                    sendMessage("ERROR: link got HTTP response:" + resp.status_code, bot, update)
-                    return
+        elif (
+              not bot_utils.is_url(link)
+              and not bot_utils.is_magnet(link)
+              or len(link) == 0
+        ) and file is None:
+            reply_text = reply_to.text
+            reply_text = re.split('\n ', reply_text)[0]
+            if bot_utils.is_url(reply_text) or bot_utils.is_magnet(reply_text):
+                link = reply_text
+
+        elif bot_utils.is_url(link) and not bot_utils.is_magnet(link) and not os.path.exists(link) and isQbit:
+            resp = requests.get(link)
+        if resp.status_code == 200:
+            file_name = str(time.time()).replace(".", "") + ".torrent"
+            open(file_name, "wb").write(resp.content)
+            link = f"{file_name}"
+        else:
+            sendMessage("ERROR: link got HTTP response:" + resp.status_code, bot, update)
+            return
         if link.startswith("|") or link.startswith("pswd: "):
             link = ''
     except IndexError:
@@ -292,24 +301,15 @@ def _mirror(bot, update, isTar=False, extract=False, isZip=False, isQbit=False):
                 break
                 
         if (
-              not bot_utils.is_url(link)
-              and not bot_utils.is_magnet(link)
-              or len(link) == 0
-        ) and file is None:
-            reply_text = reply_to.text
-            reply_text = re.split('\n ', reply_text)[0]
-            if bot_utils.is_url(reply_text) or bot_utils.is_magnet(reply_text):
-                link = reply_text
-
-    if bot_utils.is_url(link) and not bot_utils.is_magnet(link) and not os.path.exists(link) and isQbit:
-        resp = requests.get(link)
-        if resp.status_code == 200:
-            file_name = str(time.time()).replace(".", "") + ".torrent"
-            open(file_name, "wb").write(resp.content)
-            link = f"{file_name}"
-        else:
-            sendMessage("ERROR: link got HTTP response:" + resp.status_code, bot, update)
-            return
+            not bot_utils.is_url(link)
+            and not bot_utils.is_magnet(link)
+            or len(link) == 0
+        ):
+            if file is None:
+                reply_text = reply_to.text
+                reply_text = re.split('\n ', reply_text)[0]
+                if bot_utils.is_url(reply_text) or bot_utils.is_magnet(reply_text):
+                    link = reply_text
 
         if not bot_utils.is_url(link) and not bot_utils.is_magnet(link) or len(link) == 0:
             if file is not None:
@@ -325,6 +325,18 @@ def _mirror(bot, update, isTar=False, extract=False, isZip=False, isQbit=False):
                         link = f"/usr/src/app/{file.file_name}"
                     else:
                         link = file.get_file().file_path
+
+    if bot_utils.is_url(link) and not bot_utils.is_magnet(link) and not os.path.exists(link) and isQbit:
+        resp = requests.get(link)
+        if resp.status_code == 200:
+            file_name = str(time.time()).replace(".", "") + ".torrent"
+            open(file_name, "wb").write(resp.content)
+            link = f"{file_name}"
+        else:
+            sendMessage("ERROR: link got HTTP response:" + resp.status_code, bot, update)
+            return
+
+
 
     elif not bot_utils.is_url(link) and not bot_utils.is_magnet(link):
         sendMessage('No download source provided', bot, update)

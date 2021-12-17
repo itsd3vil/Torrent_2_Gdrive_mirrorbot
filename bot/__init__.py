@@ -394,6 +394,12 @@ except KeyError:
     TOKEN_PICKLE_URL = None
 
 try:
+    GDTOT_COOKIES = getConfig('GDTOT_COOKIES')
+except KeyError:
+    logging.warning('GDTOT_COOKIES not provided!')
+    GDTOT_COOKIES = None
+
+try:
     ACCOUNTS_ZIP_URL = getConfig('ACCOUNTS_ZIP_URL')
     if len(ACCOUNTS_ZIP_URL) == 0:
         ACCOUNTS_ZIP_URL = None
